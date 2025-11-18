@@ -1,0 +1,5 @@
+templates/basic-cpp23/build
+templates/basic-cpp23/.cache/clangd/index
+templates/basic-cpp23/compile_commands.json
+templates/basic-cpp23/result
+templates/basic-cpp23/flake.lock
