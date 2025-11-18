@@ -4,7 +4,7 @@
   outputs = { self, ... }: {
     templates = {
       basic-cpp23 = {
-        path = ./basic-cpp23;
+        path = ./templates/basic-cpp23;
         description = "A very basic C++23 template with release and debug builds.";
       };
     };
