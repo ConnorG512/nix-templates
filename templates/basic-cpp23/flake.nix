@@ -2,21 +2,13 @@
   description = "Basic C++23 template flake.";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.05";
   };
 
   outputs = { self, nixpkgs }: 
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages."${system}";
-    
-    projectProperties = {
-      name = "App";
-      version = "indev";
-    };
-
-    devShell = import ./nix/devshell.nix { inherit pkgs projectProperties; };
-    derivations = import ./nix/derivation.nix { inherit pkgs projectProperties; };
     
     templates = {
       basic-cpp23 = {
@@ -26,15 +18,49 @@
     };
     defaultTemplate = self.templates.basic-cpp23;
 
+    projectProperties = import ./nix/metadata.nix;
+    packages = import ./nix/packages.nix {inherit pkgs;};
+    build = ''
+      cmake --build build
+    '';
+    install = ''
+      cmake --install build
+    '';
+
   in {
+  packages.${system} = {
+      debug = pkgs.gccStdenv.mkDerivation {
+        pname = projectProperties.name;
+        name = projectProperties.name;
+        version = projectProperties.version;
+        src = ../.;
+        dontStrip = true;
 
-    devShells."${system}" = {
-      default = devShell.default;
-    }; 
+        nativeBuildInputs = packages.buildPackages ;
+        buildInputs = packages.buildPackages;
+        
+        configurePhase = ''
+          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$out
+        '';
+        buildPhase = build;
+        installPhase = install;
+      };
+      
+      release = pkgs.gccStdenv.mkDerivation {
+        pname = projectProperties.name;
+        name = projectProperties.name;
+        version = projectProperties.version;
+        src = ../.;
 
-    derivations."${system}" = {
-      gcc.debug = derivations.gcc.debug;
-      gcc.release = derivations.gcc.release;
+        nativeBuildInputs = packages.buildPackages ;
+        buildInputs = packages.buildPackages ;
+        
+        configurePhase = ''
+          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$out
+        '';
+        buildPhase = build;
+        installPhase = install;
+      };
     };
   };
 }

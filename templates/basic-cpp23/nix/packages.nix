@@ -1,12 +1,21 @@
+{ pkgs }:
+
 {
   devshellPackages = [
-      clang-tools
-      clang
-      ninja 
-      cmake 
+      pkgs.clang-tools
+      pkgs.clang
+      pkgs.ninja 
+      pkgs.cmake 
 
-      scanmem
-      gef 
-      strace
+      pkgs.scanmem
+      pkgs.gef 
+      pkgs.strace
+  ];
+
+  buildPackages = [
+      pkgs.clang-tools
+      pkgs.clang
+      pkgs.ninja 
+      pkgs.cmake 
   ];
 }
