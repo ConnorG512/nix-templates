@@ -8,6 +8,6 @@
         description = "A very basic C++23 template with release and debug builds.";
       };
     };
-    defaultTemplate = self.templates.basic-cpp23;
+    templates.default = self.templates.basic-cpp23;
   };
 }
