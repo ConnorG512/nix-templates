@@ -2,15 +2,7 @@
 
 {
   default = pkgs.mkShell {
-    packages = with pkgs; [
-      clang-tools
-      clang
-      ninja 
-      cmake 
-
-      scanmem
-      gef 
-    ];
+    packages = with pkgs; import ./packages.nix;
 
     shellHook = ''
       echo "entering ${projectProperties.name} shell!"
