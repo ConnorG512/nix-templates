@@ -13,8 +13,6 @@
   ];
 
   buildPackages = [
-      pkgs.clang-tools
-      pkgs.clang
       pkgs.ninja 
       pkgs.cmake 
   ];
