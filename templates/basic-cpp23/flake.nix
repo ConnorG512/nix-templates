@@ -40,7 +40,7 @@
         buildInputs = packages.buildPackages;
         
         configurePhase = ''
-          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$out
+          cmake -B build -S . -G Ninja --fresh -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$out
         '';
         buildPhase = build;
         installPhase = install;
@@ -56,7 +56,7 @@
         buildInputs = packages.buildPackages ;
         
         configurePhase = ''
-          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$out
+          cmake -B build -S . -G Ninja --fresh -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$out
         '';
         buildPhase = build;
         installPhase = install;
