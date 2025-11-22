@@ -1,5 +1,5 @@
 let
-  pkgs = import <nixpkgs> {"github:nixos/nixpkgs?ref=nixos-25.05"};
+  pkgs = import <nixpkgs> {};
 in
 pkgs.mkShell {
   packages  = (import ./nix/packages.nix { inherit pkgs; }).devshellPackages;
