@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(USING_NIX)
   project(${NIX_PROJECT_NAME} CXX)
 else()
-  project(App CXX)
+  project(app CXX)
 endif()
 
 set(SOURCE_FILES
@@ -37,13 +37,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND UNIX AND NOT APPLE)
   message(VERBOSE "Debug build detected, linking fsanitize and ggdb")
   target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=address,undefined -ggdb)
   target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address,undefined)
-endif()
-
-# Fallback for clangd in Nix not finding standard libs.
-if(CMAKE_EXPORT_COMPILE_COMMANDS AND USING_NIX)
-  message(STATUS "Using Nix clangd workaround")
-  set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES 
-      ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
