@@ -2,65 +2,25 @@
   description = "Basic C++23 template flake.";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
   outputs = { self, nixpkgs }: 
   let
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages."${system}";
-    
-    templates = {
-      basic-cpp23 = {
-        path = ./basic-cpp23;
-        description = "A very basic C++23 template with release and debug builds.";
-      };
-    };
-    defaultTemplate = self.templates.basic-cpp23;
-
-    projectProperties = import ./nix/metadata.nix;
-    packages = import ./nix/packages.nix {inherit pkgs;};
-    build = ''
-      cmake --build build
-    '';
-    install = ''
-      cmake --install build
-    '';
+    pkgs =  import nixpkgs { inherit system; };   
 
   in {
-  packages.${system} = {
-      debug = pkgs.gccStdenv.mkDerivation {
-        pname = projectProperties.name;
-        name = projectProperties.name;
-        version = projectProperties.version;
-        src = ../.;
-        dontStrip = true;
+    devShells.x86_64-linux.default = pkgs.mkShellNoCC {
+      packages = with pkgs; [
+        ccls
 
-        nativeBuildInputs = packages.buildPackages ;
-        buildInputs = packages.buildPackages;
-        
-        configurePhase = ''
-          cmake -B build -S . -G Ninja --fresh -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$out
-        '';
-        buildPhase = build;
-        installPhase = install;
-      };
+        cmake
+        ninja
+      ];
       
-      release = pkgs.gccStdenv.mkDerivation {
-        pname = projectProperties.name;
-        name = projectProperties.name;
-        version = projectProperties.version;
-        src = ../.;
-
-        nativeBuildInputs = packages.buildPackages ;
-        buildInputs = packages.buildPackages ;
-        
-        configurePhase = ''
-          cmake -B build -S . -G Ninja --fresh -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$out
-        '';
-        buildPhase = build;
-        installPhase = install;
-      };
-    };
+      shellHook = ''
+      '';
+    }; 
   };
 }
