@@ -30,13 +30,8 @@
         
         buildInputs = with pkgs; [ ];
         
-        cmakeFlags = [
-          "-DCMAKE_BUILD_TYPE=Release"
-          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-        ];
-        
         configurePhase = ''
-          cmake -B build -S . -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
         '';
 
         buildPhase = ''
@@ -45,15 +40,44 @@
 
         installPhase = ''
           mkdir -p $out/bin
-          cp build/compile_commands.json $out/bin
+          cp build/${projectInfo.execName} $out/bin
+        '';
+      };
+
+      debug = pkgs.stdenv.mkDerivation {
+        pname = projectInfo.projectName;
+        name = projectInfo.execName;
+        version = projectInfo.version; 
+        src = ./.;
+          
+        nativeBuildInputs = with pkgs; [
+          cmake
+          ninja
+        ];
+        
+        buildInputs = with pkgs; [ ];
+        
+        configurePhase = ''
+          cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Debug
+        '';
+
+        buildPhase = ''
+          cmake --build build 
+        '';
+
+        installPhase = ''
+          mkdir -p $out/bin
           cp build/${projectInfo.execName} $out/bin
         '';
       };
     };
   in {
-    devShells.x86_64-linux.default = pkgs.mkShellNoCC {
+    devShells.x86_64-linux.default = pkgs.mkShell {
+      stdenv = pkgs.clangStdenv;
       packages = with pkgs; [
         ccls
+        cmake
+        ninja
         
         gef
         strace 
@@ -65,5 +89,7 @@
     }; 
     
     packages.x86_64-linux.default = derivations.release;
+    packages.x86_64-linux.release = derivations.release;
+    packages.x86_64-linux.debug= derivations.debug;
   };
 }
